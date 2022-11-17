@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"remoteworkout/internal/domain"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var workouts = []domain.Workout{
@@ -29,7 +31,7 @@ var workouts = []domain.Workout{
 }
 
 func GetWorkouts(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Handle get workouts")
+	log.Println("Handle get workouts")
 	responseBytes, err := json.Marshal(workouts)
 	if err != nil {
 		fmt.Println(err)

@@ -2,12 +2,13 @@ package route
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func GetLogin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Handle get login")
+	log.Println("Handle get login")
 	response := map[string]bool{
 		"success": true,
 	}
