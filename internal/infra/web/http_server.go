@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"remoteworkout/internal/infra/web/route"
 )
 
 type HttpServer struct {
@@ -31,4 +32,11 @@ func decorateHttpMethod(method string, handler func(http.ResponseWriter, *http.R
 			handler(w, r)
 		}
 	}
+}
+
+func CreateHttpServer() *HttpServer {
+	server := HttpServer{Origin: http.NewServeMux()}
+	server.Get("/auth/login", route.GetLogin)
+	server.Get("/workout", route.GetWorkouts)
+	return &server
 }

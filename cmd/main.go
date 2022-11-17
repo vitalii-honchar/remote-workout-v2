@@ -1,8 +1,12 @@
 package main
 
 import (
+	"remoteworkout/internal/infra/web"
+
 	log "github.com/sirupsen/logrus"
 )
+
+const port = 8080
 
 func initLogging() {
 	log.SetFormatter(&log.TextFormatter{
@@ -13,5 +17,6 @@ func initLogging() {
 
 func main() {
 	initLogging()
-	log.Info("Starting remote-workout back-end")
+	log.Infof("Starting remote-workout back-end at port %d", port)
+	web.CreateHttpServer().Listen(port)
 }
