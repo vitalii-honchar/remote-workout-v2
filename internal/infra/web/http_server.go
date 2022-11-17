@@ -4,18 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"remoteworkout/internal/infra/web/route"
 
 	log "github.com/sirupsen/logrus"
 )
 
 type HttpServer struct {
 	Origin *http.ServeMux
-}
-
-type httpEndpoint struct {
-	method  string
-	handler func(*Request, chan Response)
 }
 
 func (hs *HttpServer) Get(path string, handler func(*Request, chan Response)) {
@@ -70,7 +64,5 @@ func writeResponse(r *Response, w http.ResponseWriter) {
 
 func CreateHttpServer() *HttpServer {
 	server := HttpServer{Origin: http.NewServeMux()}
-	server.Get("/auth/login", route.GetLogin)
-	server.Get("/workout", route.GetWorkouts)
 	return &server
 }
