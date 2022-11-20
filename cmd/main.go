@@ -1,7 +1,7 @@
 package main
 
 import (
-	"remoteworkout/internal/infra/web"
+	"remoteworkout/internal/infra/config"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,5 +18,6 @@ func initLogging() {
 func main() {
 	initLogging()
 	log.Infof("Starting remote-workout back-end at port %d", port)
-	web.CreateHttpServer().Listen(port)
+	ctx := config.ProvideAppContext()
+	ctx.Server.Listen(port)
 }
