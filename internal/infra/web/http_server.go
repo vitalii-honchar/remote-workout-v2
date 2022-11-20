@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"remoteworkout/internal/infra/web/request"
+	"remoteworkout/internal/infra/web/route"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -12,15 +14,15 @@ type HttpServer struct {
 	Origin *http.ServeMux
 }
 
-func (hs *HttpServer) Get(path string, handler func(*Request, chan Response)) {
+func (hs *HttpServer) Get(path string, handler func(*request.Request, chan request.Response)) {
 	hs.Origin.HandleFunc(path, handleDecorator(http.MethodGet, handler))
 }
 
-func (hs *HttpServer) Post(path string, handler func(*Request, chan Response)) {
+func (hs *HttpServer) Post(path string, handler func(*request.Request, chan request.Response)) {
 	hs.Origin.HandleFunc(path, handleDecorator(http.MethodGet, handler))
 }
 
-func (hs *HttpServer) Delete(path string, handler func(*Request, chan Response)) {
+func (hs *HttpServer) Delete(path string, handler func(*request.Request, chan request.Response)) {
 	hs.Origin.HandleFunc(path, handleDecorator(http.MethodGet, handler))
 }
 
@@ -28,10 +30,10 @@ func (hs *HttpServer) Listen(port int) {
 	http.ListenAndServe(fmt.Sprintf(":%d", port), hs.Origin)
 }
 
-func handleDecorator(method string, handler func(*Request, chan Response)) func(http.ResponseWriter, *http.Request) {
+func handleDecorator(method string, handler func(*request.Request, chan request.Response)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == method {
-			if req, err := createRequest(r); err != nil {
+			if req, err := request.CreateRequest(r); err != nil {
 				log.Error("Unexpected error during parsing request", err)
 				w.WriteHeader(http.StatusInternalServerError)
 			} else {
@@ -42,8 +44,8 @@ func handleDecorator(method string, handler func(*Request, chan Response)) func(
 	}
 }
 
-func handleRequest(req *Request, handler func(*Request, chan Response)) *Response {
-	c := make(chan Response)
+func handleRequest(req *request.Request, handler func(*request.Request, chan request.Response)) *request.Response {
+	c := make(chan request.Response)
 	go handler(req, c)
 
 	resp := <-c
@@ -51,7 +53,7 @@ func handleRequest(req *Request, handler func(*Request, chan Response)) *Respons
 	return &resp
 }
 
-func writeResponse(r *Response, w http.ResponseWriter) {
+func writeResponse(r *request.Response, w http.ResponseWriter) {
 	responseBytes, err := json.Marshal(r.Body)
 	if err != nil {
 		log.Errorf("Unexpected error during serializing response: %v", r, err)
@@ -64,5 +66,8 @@ func writeResponse(r *Response, w http.ResponseWriter) {
 
 func CreateHttpServer() *HttpServer {
 	server := HttpServer{Origin: http.NewServeMux()}
+
+	server.Get("/auth/login", route.GetLogin)
+
 	return &server
 }
