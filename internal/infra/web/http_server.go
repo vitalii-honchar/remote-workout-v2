@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"remoteworkout/internal/infra/web/request"
-	"remoteworkout/internal/infra/web/route"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -62,12 +61,4 @@ func writeResponse(r *request.Response, w http.ResponseWriter) {
 		w.WriteHeader(r.StatusCode)
 		w.Write(responseBytes)
 	}
-}
-
-func CreateHttpServer() *HttpServer {
-	server := HttpServer{Origin: http.NewServeMux()}
-
-	server.Get("/auth/login", route.GetLogin)
-
-	return &server
 }

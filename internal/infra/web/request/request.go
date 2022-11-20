@@ -1,4 +1,4 @@
-package web
+package request
 
 import (
 	"encoding/json"
@@ -12,12 +12,7 @@ type Request struct {
 	Body        map[string]any
 }
 
-type Response struct {
-	StatusCode int
-	Body       any
-}
-
-func createRequest(r *http.Request) (*Request, error) {
+func CreateRequest(r *http.Request) (*Request, error) {
 	var body map[string]any
 	bodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -28,8 +23,4 @@ func createRequest(r *http.Request) (*Request, error) {
 	}
 
 	return &Request{Body: body}, nil
-}
-
-func createResponse(body any) *Response {
-	return &Response{Body: body, StatusCode: http.StatusOK}
 }

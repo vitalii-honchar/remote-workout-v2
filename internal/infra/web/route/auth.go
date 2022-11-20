@@ -1,15 +1,15 @@
 package route
 
 import (
-	"remoteworkout/internal/infra/web"
+	"remoteworkout/internal/infra/web/request"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func GetLogin(r *web.Request, c chan web.Response) {
+func GetLogin(r *request.Request, c chan request.Response) {
 	log.Info("Handle get login")
 	response := map[string]bool{
 		"success": true,
 	}
-	c <- web.Response{Body: response}
+	c <- request.Response{Body: response}
 }

@@ -1,10 +1,9 @@
 package route
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
 	"remoteworkout/internal/domain"
+	"remoteworkout/internal/infra/database/workout"
+	"remoteworkout/internal/infra/web/request"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -30,13 +29,13 @@ var workouts = []domain.Workout{
 	},
 }
 
-func GetWorkouts(w http.ResponseWriter, r *http.Request) {
+func GetWorkouts(wr *workout.WorkoutRepository, r *request.Request, c chan request.Response) {
 	log.Println("Handle get workouts")
-	responseBytes, err := json.Marshal(workouts)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		w.Write(responseBytes)
-	}
+	// responseBytes, err := json.Marshal(workouts)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// } else {
+	// 	w.Write(responseBytes)
+	// }
 }
