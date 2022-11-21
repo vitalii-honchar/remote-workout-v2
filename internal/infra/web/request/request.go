@@ -18,8 +18,10 @@ func CreateRequest(r *http.Request) (*Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(bodyBytes, &body); err != nil {
-		return nil, err
+	if len(bodyBytes) > 0 {
+		if err := json.Unmarshal(bodyBytes, &body); err != nil {
+			return nil, err
+		}
 	}
 
 	return &Request{Body: body}, nil

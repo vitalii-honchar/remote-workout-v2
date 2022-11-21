@@ -7,21 +7,42 @@
 package config
 
 import (
+	"database/sql"
 	"github.com/google/wire"
+	"remoteworkout/internal/infra/database/workout"
 	"remoteworkout/internal/infra/web"
+)
+
+import (
+	_ "github.com/lib/pq"
 )
 
 // Injectors from app_config.go:
 
+func ProvideDatabaseContext() *web.DatabaseContext {
+	db := ProvideDb()
+	videoRepository := workout.CreateVideoRepository(db)
+	workoutRepository := workout.CreateWorkoutRepository(db, videoRepository)
+	databaseContext := &web.DatabaseContext{
+		WorkoutRepository: workoutRepository,
+	}
+	return databaseContext
+}
+
 func ProvideHttpServer() *web.HttpServer {
-	httpServer := web.CreateHttpServer()
+	databaseContext := ProvideDatabaseContext()
+	httpServer := web.ProvideHttpServer(databaseContext)
 	return httpServer
 }
 
 func ProvideAppContext() *AppContext {
 	httpServer := ProvideHttpServer()
+	db := ProvideDb()
+	videoRepository := workout.CreateVideoRepository(db)
+	workoutRepository := workout.CreateWorkoutRepository(db, videoRepository)
 	appContext := &AppContext{
-		Server: httpServer,
+		Server:            httpServer,
+		WorkoutRepository: workoutRepository,
 	}
 	return appContext
 }
@@ -29,9 +50,18 @@ func ProvideAppContext() *AppContext {
 // app_config.go:
 
 type AppContext struct {
-	Server *web.HttpServer
+	Server            *web.HttpServer
+	WorkoutRepository *workout.WorkoutRepository
+}
+
+func ProvideDb() *sql.DB {
+	db, err := sql.Open("postgres", "postgresql://user:password@localhost:5432/remote_workout?sslmode=disable")
+	if err != nil {
+		panic(err)
+	}
+	return db
 }
 
 var ContextSet = wire.NewSet(
-	ProvideHttpServer, wire.Struct(new(AppContext), "*"),
+	ProvideDb, workout.CreateVideoRepository, workout.CreateWorkoutRepository, wire.Struct(new(web.DatabaseContext), "WorkoutRepository"), wire.Struct(new(AppContext), "*"),
 )

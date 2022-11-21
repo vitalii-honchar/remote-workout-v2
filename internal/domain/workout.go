@@ -1,13 +1,14 @@
 package domain
 
 type Workout struct {
-	Coach       string
-	Id          int
-	Name        string
-	Description string
+	Id          int    `json:"id"`
+	CoachId     int    `json:"coach_id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 	Videos      []WorkoutVideo
 }
 
 type WorkoutVideo struct {
+	Id   int
 	Link string
 }

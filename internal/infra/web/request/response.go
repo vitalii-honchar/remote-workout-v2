@@ -10,3 +10,7 @@ type Response struct {
 func CreateResponse(body any) *Response {
 	return &Response{Body: body, StatusCode: http.StatusOK}
 }
+
+func CreateErrorResponse(statusCode int) *Response {
+	return &Response{StatusCode: statusCode}
+}

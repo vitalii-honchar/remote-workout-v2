@@ -58,6 +58,7 @@ func writeResponse(r *request.Response, w http.ResponseWriter) {
 		log.Errorf("Unexpected error during serializing response: %v", r, err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(r.StatusCode)
 		w.Write(responseBytes)
 	}
